@@ -108,4 +108,3 @@ class ScoutReport(HTMLReport):
                         newline = newline.replace('<!-- PLACEHOLDER -->', contents)
                         nf.write(newline)
         return new_file
-
