@@ -1,9 +1,11 @@
 # Core
 python-dateutil>=2.2
 netaddr>=0.7.11
+cherrypy>=18.1.0
 coloredlogs>=10.0
 flask>=1.0.2
 iampoliciesgonewild>=1.0.6.2
+sqlitedict>=1.6.0
 
 # AWS Provider
 boto3>=1.9.60
