@@ -8,9 +8,10 @@ import zipfile
 import dateutil.tz
 from ScoutSuite.core.console import print_info, print_exception
 
-from ScoutSuite import DEFAULT_RESULT_FILE, DEFAULT_HTMLREPORT_FILE, DEFAULT_EXCEPTIONS_FILE
+from ScoutSuite import AWSCONFIG, EXCEPTIONS, HTMLREPORT, AWSRULESET, AWSCONFIG_FILE, EXCEPTIONS_FILE, HTMLREPORT_FILE, \
+    GENERATOR_FILE
 from ScoutSuite import ERRORS_LIST
-from ScoutSuite.output.js import JavaScriptReaderWriter
+from ScoutSuite.output.result_encoder import JavaScriptEncoder
 from ScoutSuite.output.utils import get_filename, prompt_4_overwrite
 
 
@@ -30,7 +31,7 @@ class HTMLReport(object):
         self.exceptions = exceptions
         self.scout_report_data_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'data')
         self.html_data_path = os.path.join(self.scout_report_data_path, 'html')
-        self.jsrw = JavaScriptReaderWriter(self.profile, report_dir, timestamp)
+        self.jsrw = JavaScriptEncoder(self.profile, report_dir, timestamp)
 
     def get_content_from(self, templates_type):
         contents = ''
