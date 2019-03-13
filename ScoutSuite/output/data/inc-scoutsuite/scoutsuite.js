@@ -176,7 +176,7 @@ function load_config_from_json(script_id, cols) {
 
     // Update the list of loaded data
     loaded_config_array.push(script_id);
-    return 1;
+    return 1;*/
 };
 
 
