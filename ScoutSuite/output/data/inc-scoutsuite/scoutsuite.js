@@ -102,7 +102,8 @@ function onPageLoad() {
  */
 var load_account_id = function () {
     var element = document.getElementById('account_id');
-    var value = '<i class="fa fa-cloud"></i> ' + run_results['provider_name'] + ' <i class="fa fa-chevron-right"></i> ' + run_results['account_id'];
+    var value = '<i class="fa fa-cloud"></i> ' + run_results['provider_name'] +
+        ' <i class="fa fa-chevron-right"></i> ' + run_results['account_id'];
     if (('organization' in run_results) && (value in run_results['organization'])) {
         value += ' (' + run_results['organization'][value]['Name'] + ')'
     };
@@ -780,12 +781,23 @@ function load_metadata() {
         4
     });
 
-    load_aws_account_id();
-    load_config_from_json('last_run', 1);
-    load_config_from_json('metadata', 0);
-    load_config_from_json('services.id.findings', 1);
-    load_config_from_json('services.id.filters', 0); // service-specific filters
-    load_config_from_json('services.id.regions', 0); // region filters
+    load_account_id();
+    if (run_results.result_format === "json") {
+        load_config_from_json('last_run', 1);
+        load_config_from_json('metadata', 0);
+        load_config_from_json('services.id.findings', 1);
+        load_config_from_json('services.id.filters', 0); // service-specific filters
+        load_config_from_json('services.id.regions', 0); // region filters
+    } else {
+        alert("Loading from SQLite is not implemented.");
+        /*
+        load_config_from_sqlite('last_run', 1);
+        load_config_from_sqlite('metadata', 0);
+        load_config_from_sqlite('services.id.findings', 1);
+        load_config_from_sqlite('services.id.filters', 0); // service-specific filters
+        load_config_from_sqlite('services.id.regions', 0); // region filters
+        */
+    }
 
     for (group in run_results['metadata']) {
         for (service in run_results['metadata'][group]) {
@@ -1036,7 +1048,11 @@ function lazy_loading(path) {
             break
         };
     };
-    return load_config_from_json(path, cols);
+    if (run_results.result_format === "json") {
+        return load_config_from_json(path, cols);
+    } else {
+        //return load_config_from_sqlite(path, cols);
+    }
 };
 
 
