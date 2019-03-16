@@ -12,7 +12,7 @@ from ScoutSuite import AWSCONFIG, EXCEPTIONS, HTMLREPORT, AWSRULESET, AWSCONFIG_
     GENERATOR_FILE
 from ScoutSuite import ERRORS_LIST
 from ScoutSuite.output.result_encoder import JavaScriptEncoder, SqlLiteEncoder
-from ScoutSuite.output.utils import get_filename, prompt_4_overwrite
+from ScoutSuite.output.utils import get_filename, prompt_for_overwrite
 
 
 class HTMLReport(object):
@@ -100,7 +100,7 @@ class ScoutReport(HTMLReport):
         contents += self.get_content_from('summaries/%s' % self.provider)
         new_file, first_line = get_filename('HTMLREPORT', self.profile, self.report_dir)
         print_info('Creating %s' % new_file)
-        if prompt_4_overwrite(new_file, force_write):
+        if prompt_for_overwrite(new_file, force_write):
             if os.path.exists(new_file):
                 os.remove(new_file)
             with open(os.path.join(self.html_data_path, self.html_root)) as f:
