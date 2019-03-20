@@ -7,8 +7,9 @@ import os
 
 class DummyResources(AWSResources):
     async def fetch_all(self):
-        self['resource_a'] = { 'some_id': 1, 'from_scope': self.scope }
-        self['resource_b'] = { 'some_id': 2, 'from_scope': self.scope }
+        self['resource_a'] = {'some_id': 1, 'from_scope': self.scope}
+        self['resource_b'] = {'some_id': 2, 'from_scope': self.scope}
+
 
 
 class DummyComposite(AWSCompositeResources):

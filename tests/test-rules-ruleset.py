@@ -46,11 +46,11 @@ class TestScoutRulesRuleset:
         test005 = Ruleset(cloud_provider='aws', filename=self.test_ruleset_001, ruleset_generator=True)
 
     @patch("ScoutSuite.core.ruleset.print_error")
-    def test_ruleset_file_not_exist(self, printError):
+    def test_ruleset_file_not_exist(self, print_error):
         test003 = Ruleset(cloud_provider='aws', filename='tests/data/no-such-file.json')
         assert (test003.rules == [])
-        assert (printError.call_count == 1)
-        assert ("no-such-file.json does not exist" in printError.call_args_list[0][0][0])
+        assert (print_error.call_count == 1)
+        assert ("no-such-file.json does not exist" in print_error.call_args_list[0][0][0])
 
     @patch("ScoutSuite.core.ruleset.print_exception")
     def test_ruleset_invalid(self, printException):
