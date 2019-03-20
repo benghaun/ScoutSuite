@@ -10,8 +10,8 @@ import sys
 from ScoutSuite import __version__ as scout_version
 from ScoutSuite.core.console import print_exception, print_info
 from ScoutSuite.output.html import ScoutReport
+from ScoutSuite import __version__ as scoutsuite_version
 from ScoutSuite.providers.base.configs.browser import get_object_at
-from ScoutSuite.output.html import ScoutSuiteReport
 
 
 class BaseProvider(object):
