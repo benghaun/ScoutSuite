@@ -6,11 +6,10 @@ import shutil
 import zipfile
 
 import dateutil.tz
-from ScoutSuite.core.console import print_info, print_exception
 
-from ScoutSuite import AWSCONFIG, EXCEPTIONS, HTMLREPORT, AWSRULESET, AWSCONFIG_FILE, EXCEPTIONS_FILE, HTMLREPORT_FILE, \
-    GENERATOR_FILE
+from ScoutSuite import AWSCONFIG, EXCEPTIONS, HTMLREPORT, AWSCONFIG_FILE, EXCEPTIONS_FILE, HTMLREPORT_FILE
 from ScoutSuite import ERRORS_LIST
+from ScoutSuite.core.console import print_info, print_exception
 from ScoutSuite.output.result_encoder import JavaScriptEncoder, SqlLiteEncoder
 from ScoutSuite.output.utils import get_filename, prompt_for_overwrite
 
@@ -92,7 +91,7 @@ class ScoutReport(HTMLReport):
         self.html_root = DEFAULT_HTMLREPORT_FILE
         self.provider = provider
         self.result_format = result_format
-        super(Scout2Report, self).__init__(profile, report_dir, timestamp, exceptions, result_format)
+        super(ScoutSuiteReport, self).__init__(profile, report_dir, timestamp, exceptions, result_format)
 
     def save(self, config, exceptions, force_write=False, debug=False):
         self.prepare_html_report_dir()

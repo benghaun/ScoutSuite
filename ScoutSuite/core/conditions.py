@@ -23,6 +23,8 @@ def pass_conditions(all_info, current_path, conditions, unknown_as_pass_conditio
     :return:
     """
 
+    condition_operators = ['and', 'or']
+
     # Fixes circular dependency
     from ScoutSuite.providers.base.configs.browser import get_value_at
 
