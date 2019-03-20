@@ -767,7 +767,7 @@ function showPopup(content) {
  */
 function load_metadata() {
     if (document.getElementById('sqlite_format')) {
-        alert("Loading from SQLite is not yet implemented 😞");
+        get_data();
         return;
     } 
     else {

@@ -6,6 +6,8 @@ coloredlogs>=10.0
 flask>=1.0.2
 iampoliciesgonewild>=1.0.6.2
 sqlitedict>=1.6.0
+cherrypy>=18.1.0
+cherrypy-cors>=1.6
 
 # AWS Provider
 boto3>=1.9.60

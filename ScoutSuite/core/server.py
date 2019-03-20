@@ -1,5 +1,6 @@
 from sqlitedict import SqliteDict
 import cherrypy
+import cherrypy_cors
 
 
 class Server(object):
@@ -19,11 +20,17 @@ class Server(object):
 
     @staticmethod
     def init(database_filename, host, port):
+        cherrypy_cors.install()
+        config = {
+            '/': {
+                'cors.expose.on': True,
+            },
+        }
         cherrypy.config.update({
                 'server.socket_host': host,
                 'server.socket_port': port,
-            })
-        cherrypy.quickstart(Server(database_filename), "/api")
+        })
+        cherrypy.quickstart(Server(database_filename), "/api", config=config)
 
 
 if __name__ == "__main__":
