@@ -7,7 +7,7 @@ import zipfile
 
 import dateutil.tz
 
-from ScoutSuite import AWSCONFIG, EXCEPTIONS, HTMLREPORT, AWSCONFIG_FILE, EXCEPTIONS_FILE, HTMLREPORT_FILE
+from ScoutSuite.output.report_file import ReportFile
 from ScoutSuite import ERRORS_LIST
 from ScoutSuite.core.console import print_info, print_exception
 from ScoutSuite.output.result_encoder import JavaScriptEncoder, SqlLiteEncoder
@@ -88,15 +88,15 @@ class ScoutReport(HTMLReport):
 
     def __init__(self, provider, profile=None, report_dir=None, timestamp=False, exceptions=None, result_format=None):
         exceptions = {} if exceptions is None else exceptions
-        self.html_root = DEFAULT_HTMLREPORT_FILE
+        self.html_root = ReportFile.HTMLREPORT.value
         self.provider = provider
         self.result_format = result_format
         super(ScoutSuiteReport, self).__init__(profile, report_dir, timestamp, exceptions, result_format)
 
     def save(self, config, exceptions, force_write=False, debug=False):
         self.prepare_html_report_dir()
-        self.encoder.save_to_file(config, ReportFile.results, force_write, debug)
-        self.exceptions_encoder.save_to_file(exceptions, ReportFile.exceptions, force_write, debug)
+        self.encoder.save_to_file(config, ReportFile.AWSCONFIG, force_write, debug)
+        self.encoder.save_to_file(exceptions, ReportFile.EXCEPTIONS, force_write, debug)
         if ERRORS_LIST:
             self.exceptions_encoder.save_to_file(ERRORS_LIST, ReportFile.errors, force_write, debug)
         return self.create_html_report(force_write)
@@ -112,7 +112,7 @@ class ScoutReport(HTMLReport):
         contents += self.get_content_from_folder('summaries')
         contents += self.get_content_from_folder('summaries/%s' % self.provider)
 
-        new_file, first_line = get_filename(HTMLREPORT, self.profile, self.report_dir)
+        new_file, first_line = get_filename(ReportFile.HTMLREPORT, self.profile, self.report_dir)
         print_info('Creating %s' % new_file)
         if prompt_for_overwrite(new_file, force_write):
             if os.path.exists(new_file):
@@ -123,9 +123,9 @@ class ScoutReport(HTMLReport):
                         newline = line
                         newline = newline.replace('<!-- PLACEHOLDER -->', contents)
                         if self.profile != 'default':
-                            newline = newline.replace(AWSCONFIG_FILE,
-                                                      AWSCONFIG_FILE.replace('.js', '-%s.js' % self.profile))
-                            newline = newline.replace(EXCEPTIONS_FILE,
-                                                      EXCEPTIONS_FILE.replace('.js', '-%s.js' % self.profile))
+                            newline = newline.replace(ReportFile.AWSCONFIG.value,
+                                                      ReportFile.AWSCONFIG.value.replace('.js', '-%s.js' % self.profile))
+                            newline = newline.replace(ReportFile.EXCEPTIONS.value,
+                                                      ReportFile.EXCEPTIONS.value.replace('.js', '-%s.js' % self.profile))
                         nf.write(newline)
         return new_file
