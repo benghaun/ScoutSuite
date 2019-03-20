@@ -45,17 +45,28 @@ def prompt_for_overwrite(filename, force_write):
     return prompt_for_yes_no('File \'{}\' already exists. Do you want to overwrite it'.format(filename))
 
 
-def get_filename(file_type, profile, report_dir):
-    """
-    Returns the file name for a given file type
-    
-    :param file_type: can be one of the following:
-            'RESULTS' - results JSON/JS file
-            'EXCEPTIONS' - exceptions file
-            'HTMLREPORT' - HTML report
-            'RULESET' - ruleset file
-            'ERRORS' - errors file
-    """
+def get_filename(config_type, profile, report_dir, extension=None):
+        if config_type == AWSCONFIG:
+            filename = AWSCONFIG_FILE
+            first_line = 'scoutsuite_results ='
+        elif config_type == EXCEPTIONS:
+            filename = EXCEPTIONS_FILE
+            first_line = 'exceptions ='
+        elif config_type == HTMLREPORT:
+            filename = HTMLREPORT_FILE
+            first_line = None
+        elif config_type == AWSRULESET:
+            filename = AWSRULESET_FILE
+            first_line = 'scoutsuite_results ='
+        else:
+            print_error('invalid config type provided (%s)' % config_type)
+            raise Exception
+        # Append profile name if necessary
+        if profile != 'default' and config_type != AWSRULESET:
+            name, original_extension = filename.split('.')
+            extension = extension if extension else original_extension
+            filename = '%s-%s.%s' % (name, profile, extension)
+        return (os.path.join(report_dir, filename), first_line)
 
     if file_type == 'RESULTS':
         filename = DEFAULT_RESULT_FILE
