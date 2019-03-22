@@ -134,23 +134,16 @@ function loadConfigJson (scriptId, cols) {
   // Build the list based on the path, stopping at the first .id. value
   let list = run_results
   pathArray = scriptId.split('.id.')[0].split('.')
-  // console.log('Path array: ')
-  // console.log(pathArray)
   for (let i in pathArray) {
     // Allows for creation of regions-filter etc...
     if (i.endsWith('-filters')) {
       i = i.replace('-filters', '')
     }
-    console.log('List before: ')
-    console.log(list)
     list = list[pathArray[i]]
-    console.log('List after: ')
-    console.log(list)
-  }
-
-  // Filters
-  if (pathArray[i] === 'items' && i > 3 && pathArray[i - 2] == 'filters') {
-    return 1
+    // Filters
+    if (pathArray[i] === 'items' && i > 3 && pathArray[i - 2] === 'filters') {
+      return 1
+    }
   }
 
   // Default # of columns is 2
@@ -509,7 +502,11 @@ function findEC2ObjectAttribute (ec2_info, path, id, attribute) {
  */
 function findAndShowEC2Object (path, id) {
   let entities = path.split('.')
-  var object = findEC2Object(run_results['services']['ec2'], entities, id)
+  if (getFormat() === resultFormats.json) {
+    var object = findEC2Object(run_results['services']['ec2'], entities, id)
+  } else if (getFormat() === resultFormats.sqlite) {
+    console.log('TODO (SQlite)')
+  }
   var etype = entities.pop()
   if (etype === 'instances') {
     showPopup(single_ec2_instance_template(object))
@@ -530,7 +527,11 @@ function findAndShowEC2Object (path, id) {
  */
 function findAndShowEC2ObjectByAttr (path, attributes) {
   let entities = path.split('.')
+  if (getFormat() === resultFormats.json) {
   var object = findEC2ObjectByAttr(run_results['services']['ec2'], entities, attributes)
+  } else if (getFormat() === resultFormats.sqlite) {
+    console.log('TODO (SQLite)')
+  }
   var etype = entities.pop()
   if (etype === 'security_groups') {
     showPopup(single_ec2_security_group_template(object))
@@ -552,7 +553,11 @@ function showEC2Instance2 (data) {
  * @param id
  */
 function showEC2Instance (region, vpc, id) {
+  if (getFormat() === resultFormats.json) {
   var data = run_results['services']['ec2']['regions'][region]['vpcs'][vpc]['instances'][id]
+  } else if (getFormat() === resultFormats.sqlite) {
+    console.log('TODO (SQLite)')
+  }
   showPopup(single_ec2_instance_template(data))
 }
 
@@ -563,7 +568,11 @@ function showEC2Instance (region, vpc, id) {
  * @param id
  */
 function showEC2SecurityGroup (region, vpc, id) {
+  if (getFormat() === resultFormats.json) {
   var data = run_results['services']['ec2']['regions'][region]['vpcs'][vpc]['security_groups'][id]
+  } else if (getFormat() === resultFormats.sqlite) {
+    console.log('TODO (SQLite)')
+  }
   showPopup(single_ec2_security_group_template(data))
 }
 
@@ -607,11 +616,14 @@ function showObject (path, attr_name, attr_value) {
  * @param {string} path
  */
 function getResource (path) {
-  let data = run_results
+  if (getFormat() === resultFormats.json) {
+    let data = run_results
+  } else if (getFormat() === resultFormats.sqlite) {
+    console.log('TODO (SQLite)')
+  }
   for (const attribute of path.split('.')) {
     data = data[attribute]
   }
-
   return data
 }
 
@@ -628,7 +640,11 @@ function makeResourceTypeSingular (resource_type) {
  * @param policy_id
  */
 function showIAMManagedPolicy (policy_id) {
+  if (getFormat() === resultFormats.json) {
   var data = run_results['services']['iam']['policies'][policy_id]
+  } else if (getFormat() === resultFormats.sqlite) {
+    console.log('TODO (SQLite)')
+  }
   data['policy_id'] = policy_id
   showIAMPolicy(data)
 }
@@ -640,7 +656,11 @@ function showIAMManagedPolicy (policy_id) {
  * @param policy_id
  */
 function showIAMInlinePolicy (iam_entity_type, iam_entity_name, policy_id) {
+  if (getFormat() === resultFormats.json) {
   var data = run_results['services']['iam'][iam_entity_type][iam_entity_name]['inline_policies'][policy_id]
+  } else if (getFormat() === resultFormats.sqlite) {
+    console.log("TODO (SQLite)")
+  }
   data['policy_id'] = policy_id
   showIAMPolicy(data)
 }
@@ -660,7 +680,11 @@ function showIAMPolicy (data) {
  * @param bucket_name
  */
 function showS3Bucket (bucket_name) {
-  var data = run_results['services']['s3']['buckets'][bucket_name]
+  if (getFormat() === resultFormats.json) {
+    var data = run_results['services']['s3']['buckets'][bucket_name]
+  } else if (getFormat() === resultFormats.sqlite) {
+    console.log("TODO (SQLite)")
+  }  
   showPopup(single_s3_bucket_template(data))
 }
 
@@ -670,7 +694,11 @@ function showS3Bucket (bucket_name) {
  * @param key_id
  */
 function showS3Object (bucket_id, key_id) {
-  var data = run_results['services']['s3']['buckets'][bucket_id]['keys'][key_id]
+  if (getFormat() === resultFormats.json) {
+    var data = run_results['services']['s3']['buckets'][bucket_id]['keys'][key_id]
+  } else if (getFormat() === resultFormats.sqlite) {
+    console.log('TODO (SQLite)')
+  }
   data['key_id'] = key_id
   data['bucket_id'] = bucket_id
   showPopup(single_s3_object_template(data))
@@ -687,7 +715,7 @@ function showPopup (content) {
 /**
  * Get the format of the results that Scout Suite is reading from
  */
-function get_format () {
+function getFormat () {
   if (document.getElementById('sqlite_format')) {
     return resultFormats.sqlite
   } else if (document.getElementById('json_format')) {
@@ -697,9 +725,9 @@ function get_format () {
 }
 
 function load_metadata () {
-  if (get_format() === resultFormats.json) {
-    load_metadata_json()
-  } else if (get_format() === resultFormats.sqlite) {
+  if (getFormat() === resultFormats.json) {
+    loadMetadataJson()
+  } else if (getFormat() === resultFormats.sqlite) {
     loadMetadataSqlite()
   } else {
     console.log('Error: the result format could not be determined')
@@ -709,7 +737,7 @@ function load_metadata () {
 /**
  * Set up dashboards and dropdown menus
  */
-function load_metadata_json () {
+function loadMetadataJson () {
   run_results = getScoutsuiteResults()
 
   loadAccountIdJson()
@@ -761,7 +789,11 @@ function hidePleaseWait () {
  * Shows last run details modal
  */
 function showLastRunDetails () {
-  $('#modal-container').html(last_run_details_template(run_results))
+  if (getFormat() === resultFormats.json) {
+    $('#modal-container').html(last_run_details_template(run_results))
+  } else if (getFormat() === resultFormats.sqlite) {
+    console.log('TODO (SQLite)')
+  }
   $('#modal-container').modal()
 }
 
@@ -847,7 +879,11 @@ window.onhashchange = showPageFromHash
  */
 function get_value_at (path) {
   let pathArray = path.split('.')
-  let value = run_results
+  if (getFormat() === resultFormats.json) {
+    let value = run_results
+  } else if (getFormat() === resultFormats.sqlite) {
+    console.log('TODO (SQLite)')
+  }
   for (let p in pathArray) {
     try {
       value = value[pathArray[p]]
@@ -903,7 +939,11 @@ function updateDOM (anchor) {
     show_main_dashboard()
   } else if (path.endsWith('.items')) {
     // Switch view for findings
-    lazyLoading(resource_path)
+    if (getFormat() === resultFormats.json) {
+      lazyLoadingJson(resource_path)
+    } else if (getFormat() === resultFormats.json) {
+      console.log('TODO (SQLite)')
+    }
     hideAll()
     hideItems(resource_path)
     hideLinks(resource_path)
@@ -911,7 +951,7 @@ function updateDOM (anchor) {
     showFindings(path, resource_path)
     currentResourcePath = resource_path
     showFilters(resource_path)
-  } else if (lazyLoading(resource_path) == 0) {
+  } else if (lazyLoadingJson(resource_path) == 0) {
     // 0 is returned when the data was already loaded, a DOM update is necessary then
     if (path.endsWith('.view')) {
       // Same details, one item
@@ -945,7 +985,11 @@ function updateDOM (anchor) {
  * @returns {number}
  */
 // TODO: merge into load_config_from_json...
-function lazyLoading (path) {
+function lazyLoadingJson (path) {
+  if (getFormat() === resultFormats.sqlite) {
+    console.log('TODO (SQLite)')
+    return 0
+  }
   var cols = 1
   var resourcePathArray = path.split('.')
   var service = resourcePathArray[1]
