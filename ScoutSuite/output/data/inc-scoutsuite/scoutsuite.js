@@ -140,6 +140,7 @@ function loadConfigJson (scriptId, cols) {
       i = i.replace('-filters', '')
     }
     list = list[pathArray[i]]
+    console.log(list)
     // Filters
     if (pathArray[i] === 'items' && i > 3 && pathArray[i - 2] === 'filters') {
       return 1
@@ -505,7 +506,7 @@ function findAndShowEC2Object (path, id) {
   if (getFormat() === resultFormats.json) {
     var object = findEC2Object(run_results['services']['ec2'], entities, id)
   } else if (getFormat() === resultFormats.sqlite) {
-    console.log('TODO (SQlite)')
+    console.log('TODO (SQlite) 1')
   }
   var etype = entities.pop()
   if (etype === 'instances') {
@@ -530,7 +531,7 @@ function findAndShowEC2ObjectByAttr (path, attributes) {
   if (getFormat() === resultFormats.json) {
   var object = findEC2ObjectByAttr(run_results['services']['ec2'], entities, attributes)
   } else if (getFormat() === resultFormats.sqlite) {
-    console.log('TODO (SQLite)')
+    console.log('TODO (SQLite) 2')
   }
   var etype = entities.pop()
   if (etype === 'security_groups') {
@@ -556,7 +557,7 @@ function showEC2Instance (region, vpc, id) {
   if (getFormat() === resultFormats.json) {
   var data = run_results['services']['ec2']['regions'][region]['vpcs'][vpc]['instances'][id]
   } else if (getFormat() === resultFormats.sqlite) {
-    console.log('TODO (SQLite)')
+    console.log('TODO (SQLite) 3')
   }
   showPopup(single_ec2_instance_template(data))
 }
@@ -571,7 +572,7 @@ function showEC2SecurityGroup (region, vpc, id) {
   if (getFormat() === resultFormats.json) {
   var data = run_results['services']['ec2']['regions'][region]['vpcs'][vpc]['security_groups'][id]
   } else if (getFormat() === resultFormats.sqlite) {
-    console.log('TODO (SQLite)')
+    console.log('TODO (SQLite) 4')
   }
   showPopup(single_ec2_security_group_template(data))
 }
@@ -619,7 +620,7 @@ function getResource (path) {
   if (getFormat() === resultFormats.json) {
     let data = run_results
   } else if (getFormat() === resultFormats.sqlite) {
-    console.log('TODO (SQLite)')
+    console.log('TODO (SQLite) 5')
   }
   for (const attribute of path.split('.')) {
     data = data[attribute]
@@ -643,7 +644,7 @@ function showIAMManagedPolicy (policy_id) {
   if (getFormat() === resultFormats.json) {
   var data = run_results['services']['iam']['policies'][policy_id]
   } else if (getFormat() === resultFormats.sqlite) {
-    console.log('TODO (SQLite)')
+    console.log('TODO (SQLite) 6')
   }
   data['policy_id'] = policy_id
   showIAMPolicy(data)
@@ -659,7 +660,7 @@ function showIAMInlinePolicy (iam_entity_type, iam_entity_name, policy_id) {
   if (getFormat() === resultFormats.json) {
   var data = run_results['services']['iam'][iam_entity_type][iam_entity_name]['inline_policies'][policy_id]
   } else if (getFormat() === resultFormats.sqlite) {
-    console.log("TODO (SQLite)")
+    console.log('TODO (SQLite) 7')
   }
   data['policy_id'] = policy_id
   showIAMPolicy(data)
@@ -683,7 +684,7 @@ function showS3Bucket (bucket_name) {
   if (getFormat() === resultFormats.json) {
     var data = run_results['services']['s3']['buckets'][bucket_name]
   } else if (getFormat() === resultFormats.sqlite) {
-    console.log("TODO (SQLite)")
+    console.log('TODO (SQLite) 8')
   }  
   showPopup(single_s3_bucket_template(data))
 }
@@ -697,7 +698,7 @@ function showS3Object (bucket_id, key_id) {
   if (getFormat() === resultFormats.json) {
     var data = run_results['services']['s3']['buckets'][bucket_id]['keys'][key_id]
   } else if (getFormat() === resultFormats.sqlite) {
-    console.log('TODO (SQLite)')
+    console.log('TODO (SQLite) 9')
   }
   data['key_id'] = key_id
   data['bucket_id'] = bucket_id
@@ -792,7 +793,7 @@ function showLastRunDetails () {
   if (getFormat() === resultFormats.json) {
     $('#modal-container').html(last_run_details_template(run_results))
   } else if (getFormat() === resultFormats.sqlite) {
-    console.log('TODO (SQLite)')
+    console.log('TODO (SQLite) 10')
   }
   $('#modal-container').modal()
 }
@@ -882,7 +883,7 @@ function get_value_at (path) {
   if (getFormat() === resultFormats.json) {
     let value = run_results
   } else if (getFormat() === resultFormats.sqlite) {
-    console.log('TODO (SQLite)')
+    console.log('TODO (SQLite) 11')
   }
   for (let p in pathArray) {
     try {
@@ -941,8 +942,8 @@ function updateDOM (anchor) {
     // Switch view for findings
     if (getFormat() === resultFormats.json) {
       lazyLoadingJson(resource_path)
-    } else if (getFormat() === resultFormats.json) {
-      console.log('TODO (SQLite)')
+    } else if (getFormat() === resultFormats.sqlite) {
+      console.log('TODO (SQLite) 12')
     }
     hideAll()
     hideItems(resource_path)
@@ -987,7 +988,7 @@ function updateDOM (anchor) {
 // TODO: merge into load_config_from_json...
 function lazyLoadingJson (path) {
   if (getFormat() === resultFormats.sqlite) {
-    console.log('TODO (SQLite)')
+    console.log('TODO (SQLite) 13')
     return 0
   }
   var cols = 1
