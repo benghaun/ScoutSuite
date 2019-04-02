@@ -2,7 +2,7 @@
 const resultFormats = { 'invalid': 0, 'json': 1, 'sqlite': 2 }
 Object.freeze(resultFormats)
 var loadedConfigArray = []
-var run_results
+var runResults
 
 /**
  * Event handlers
@@ -149,7 +149,7 @@ function loadConfig (scriptId, cols, force) {
   }
 
   // Build the list based on the path, stopping at the first .id. value
-  let list = run_results
+  let list = runResults
   pathArray = scriptId.split('.id.')[0].split('.')
   for (let i in pathArray) {
     // Allows for creation of regions-filter etc...
@@ -557,7 +557,7 @@ function findEC2ObjectAttribute (ec2Info, path, id, attribute) {
 function findAndShowEC2Object (path, id) {
   let entities = path.split('.')
   if (getFormat() === resultFormats.json) {
-    var object = findEC2Object(run_results['services']['ec2'], entities, id)
+    var object = findEC2Object(runResults['services']['ec2'], entities, id)
   } else if (getFormat() === resultFormats.sqlite) {
     console.log('TODO (SQlite) 1')
   }
@@ -582,7 +582,7 @@ function findAndShowEC2Object (path, id) {
 function findAndShowEC2ObjectByAttr (path, attributes) {
   let entities = path.split('.')
   if (getFormat() === resultFormats.json) {
-    var object = findEC2ObjectByAttr(run_results['services']['ec2'], entities, attributes)
+    var object = findEC2ObjectByAttr(runResults['services']['ec2'], entities, attributes)
   } else if (getFormat() === resultFormats.sqlite) {
     console.log('TODO (SQLite) 2')
   }
@@ -608,7 +608,7 @@ function showEC2Instance2 (data) {
  */
 function showEC2Instance (region, vpc, id) {
   if (getFormat() === resultFormats.json) {
-    var data = run_results['services']['ec2']['regions'][region]['vpcs'][vpc]['instances'][id]
+    var data = runResults['services']['ec2']['regions'][region]['vpcs'][vpc]['instances'][id]
   } else if (getFormat() === resultFormats.sqlite) {
     console.log('TODO (SQLite) 3')
   }
@@ -623,7 +623,7 @@ function showEC2Instance (region, vpc, id) {
  */
 function showEC2SecurityGroup (region, vpc, id) {
   if (getFormat() === resultFormats.json) {
-    var data = run_results['services']['ec2']['regions'][region]['vpcs'][vpc]['security_groups'][id]
+    var data = runResults['services']['ec2']['regions'][region]['vpcs'][vpc]['security_groups'][id]
   } else if (getFormat() === resultFormats.sqlite) {
     console.log('TODO (SQLite) 4')
   }
@@ -674,7 +674,7 @@ function showObject (path, attrName, attrValue) {
  * @param {string} path
  */
 function getResource (path) {
-  let data = run_results
+  let data = runResults
   for (const attribute of path.split('.')) {
     data = data[attribute]
   }
@@ -695,7 +695,7 @@ function makeResourceTypeSingular (resource_type) {
  */
 function showIAMManagedPolicy (policyId) {
   if (getFormat() === resultFormats.json) {
-    var data = run_results['services']['iam']['policies'][policyId]
+    var data = runResults['services']['iam']['policies'][policyId]
   } else if (getFormat() === resultFormats.sqlite) {
     console.log('TODO (SQLite) 6')
   }
@@ -711,7 +711,7 @@ function showIAMManagedPolicy (policyId) {
  */
 function showIAMInlinePolicy (iamEntityType, iamEntityName, policyId) {
   if (getFormat() === resultFormats.json) {
-    var data = run_results['services']['iam'][iamEntityType][iamEntityName]['inline_policies'][policyId]
+    var data = runResults['services']['iam'][iamEntityType][iamEntityName]['inline_policies'][policyId]
   } else if (getFormat() === resultFormats.sqlite) {
     console.log('TODO (SQLite) 7')
   }
@@ -735,7 +735,7 @@ function showIAMPolicy (data) {
  */
 function showS3Bucket (bucketName) {
   if (getFormat() === resultFormats.json) {
-    var data = run_results['services']['s3']['buckets'][bucketName]
+    var data = runResults['services']['s3']['buckets'][bucketName]
   } else if (getFormat() === resultFormats.sqlite) {
     console.log('TODO (SQLite) 8')
   }  
@@ -749,7 +749,7 @@ function showS3Bucket (bucketName) {
  */
 function showS3Object (bucketId, keyId) {
   if (getFormat() === resultFormats.json) {
-    var data = run_results['services']['s3']['buckets'][bucketId]['keys'][keyId]
+    var data = runResults['services']['s3']['buckets'][bucketId]['keys'][keyId]
   } else if (getFormat() === resultFormats.sqlite) {
     console.log('TODO (SQLite) 9')
   }
@@ -784,9 +784,9 @@ function getFormat () {
  */
 function loadMetadata () {
   if (getFormat() === resultFormats.json) {
-    run_results = getScoutsuiteResultsJson() 
+    runResults = getScoutsuiteResultsJson() 
   } else if (getFormat() === resultFormats.sqlite) {
-    run_results = getScoutsuiteResultsSqlite()
+    runResults = getScoutsuiteResultsSqlite()
     loadFirstPageEverywhere()
   }
 
@@ -798,16 +798,16 @@ function loadMetadata () {
   loadConfig('services.id.filters', 0, false) // service-specific filters
   loadConfig('services.id.regions', 0, false) // region filters
 
-  for (let group in run_results['metadata']) {
-    for (let service in run_results['metadata'][group]) {
+  for (let group in runResults['metadata']) {
+    for (let service in runResults['metadata'][group]) {
       if (service === 'summaries') {
         continue
       }
-      for (let section in run_results['metadata'][group][service]) {
-        for (let resourceType in run_results['metadata'][group][service][section]) {
+      for (let section in runResults['metadata'][group][service]) {
+        for (let resourceType in runResults['metadata'][group][service][section]) {
           add_templates(group, service, section, resourceType,
-            run_results['metadata'][group][service][section][resourceType]['path'],
-            run_results['metadata'][group][service][section][resourceType]['cols'])
+            runResults['metadata'][group][service][section][resourceType]['path'],
+            runResults['metadata'][group][service][section][resourceType]['cols'])
         }
       }
     }
@@ -839,7 +839,7 @@ function hidePleaseWait () {
  * Shows last run details modal
  */
 function showLastRunDetails () {
-  $('#modal-container').html(last_run_details_template(run_results))
+  $('#modal-container').html(last_run_details_template(runResults))
   $('#modal-container').modal()
 }
 
@@ -847,7 +847,7 @@ function showLastRunDetails () {
  * Shows resources details modal
  */
 function showResourcesDetails() {
-  $('#modal-container').html(resources_details_template(run_results));
+  $('#modal-container').html(resources_details_template(runResults));
   $('#modal-container').modal()
 }
 
@@ -928,7 +928,7 @@ window.onhashchange = showPageFromHash
  */
 function get_value_at (path) {
   let pathArray = path.split('.')
-  let value = run_results
+  let value = runResults
   for (let p in pathArray) {
     try {
       value = value[pathArray[p]]
@@ -950,7 +950,7 @@ function updateDOM (anchor) {
   var path = decodeURIComponent(anchor.replace('#', ''))
 
   // Get resource path based on browsed-to path
-  var resource_path = get_resource_path(path)
+  var resourcePath = get_resource_path(path)
 
   updateNavbar(path)
 
@@ -973,7 +973,7 @@ function updateDOM (anchor) {
     let title = get_value_at(path.replace('items', 'description'))
     updateTitle(title)
   } else {
-    let title = makeTitle(resource_path)
+    let title = makeTitle(resourcePath)
     updateTitle(title)
   }
 
@@ -986,35 +986,35 @@ function updateDOM (anchor) {
     show_main_dashboard()
   } else if (path.endsWith('.items')) {
     // Switch view for findings
-    lazyLoadingJson(resource_path)
+    lazyLoadingJson(resourcePath)
     hideAll()
-    hideItems(resource_path)
-    hideLinks(resource_path)
-    showRow(resource_path)
-    showFindings(path, resource_path)
-    currentResourcePath = resource_path
-    showFilters(resource_path)
-  } else if (lazyLoadingJson(resource_path) == 0) {
+    hideItems(resourcePath)
+    hideLinks(resourcePath)
+    showRow(resourcePath)
+    showFindings(path, resourcePath)
+    currentResourcePath = resourcePath
+    showFilters(resourcePath)
+  } else if (lazyLoadingJson(resourcePath) == 0) {
     // 0 is returned when the data was already loaded, a DOM update is necessary then
     if (path.endsWith('.view')) {
       // Same details, one item
       hideItems(currentResourcePath)
       showSingleItem(path)
-    } else if (currentResourcePath !== '' && resource_path.match(currentResourcePath.replace(/.id./g, '\.[^.]+\.'))) {
+    } else if (currentResourcePath !== '' && resourcePath.match(currentResourcePath.replace(/.id./g, '\.[^.]+\.'))) {
       // Same details, multiple items
       hideItems(currentResourcePath)
       showItems(path)
     } else {
       // Switch view for resources
       hideAll()
-      showRowWithItems(resource_path)
-      showFilters(resource_path)
-      currentResourcePath = resource_path
+      showRowWithItems(resourcePath)
+      showFilters(resourcePath)
+      currentResourcePath = resourcePath
     }
   } else {
     // The DOM was updated by the lazy loading function, save the current resource path
-    showFilters(resource_path)
-    currentResourcePath = resource_path
+    showFilters(resourcePath)
+    currentResourcePath = resourcePath
   }
 
   // Scroll to the top
@@ -1031,10 +1031,10 @@ function lazyLoadingJson (path) {
   var resourcePathArray = path.split('.')
   var service = resourcePathArray[1]
   var resource_type = resourcePathArray[resourcePathArray.length - 1]
-  for (let group in run_results['metadata']) {
-    if (service in run_results['metadata'][group]) {
-      if (resource_type in run_results['metadata'][group][service]['resources']) {
-        cols = run_results['metadata'][group][service]['resources'][resource_type]['cols']
+  for (let group in runResults['metadata']) {
+    if (service in runResults['metadata'][group]) {
+      if (resource_type in runResults['metadata'][group][service]['resources']) {
+        cols = runResults['metadata'][group][service]['resources'][resource_type]['cols']
       }
       break
     }
@@ -1335,7 +1335,7 @@ function download_as_csv (filename, rows) {
   }
 }
 
- /**
+/**
   * Downloads the dictionary as a .json file
   * @param {string} filename
   * @param {object} dict
