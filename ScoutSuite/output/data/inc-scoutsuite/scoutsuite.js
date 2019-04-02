@@ -1,8 +1,7 @@
 // Globals
 const resultFormats = { 'invalid': 0, 'json': 1, 'sqlite': 2 }
 Object.freeze(resultFormats)
-const reCount = new RegExp('_count+$')
-var loadedConfigArray = new Array()
+var loadedConfigArray = []
 var run_results
 
 /**
@@ -201,22 +200,11 @@ function processTemplate (id1, containerId, list, replace) {
   var templateToCompile = document.getElementById(id1).innerHTML
   var compiledTemplate = Handlebars.compile(templateToCompile)
   var innerHtml = compiledTemplate({ items: list })
-  if (replace) {document.getElementById(containerId).innerHTML = innerHtml}
-  else {document.getElementById(containerId).innerHTML += innerHtml}
-}
-
-/**
- * Compile Handlebars templates and update the DOM
- * @param id1
- * @param containerId
- * @param list
- */
-function replaceTemplate (id1, containerId, list) {
-  id1 = id1.replace(/<|>/g, '')
-  var templateToCompile = document.getElementById(id1).innerHTML
-  var compiledTemplate = Handlebars.compile(templateToCompile)
-  var innerHtml = compiledTemplate({ items: list })
-  document.getElementById(containerId).innerHTML += innerHtml
+  if (replace) {
+    document.getElementById(containerId).innerHTML = innerHtml
+  } else {
+    document.getElementById(containerId).innerHTML += innerHtml
+  }
 }
 
 /**
@@ -243,8 +231,8 @@ function showRow (path) {
 }
 
 /**
- * 
- * @param {*} path 
+ * Shows the list
+ * @param {string} path
  */
 function showList (path) {
   $('div').filter(function () {
@@ -253,8 +241,8 @@ function showList (path) {
 }
 
 /**
- * 
- * @param {*} path 
+ * Shows the details
+ * @param {string} path
  */
 function showDetails (path) {
   $('div').filter(function () {
@@ -263,8 +251,8 @@ function showDetails (path) {
 }
 
 /**
- * 
- * @param {*} path 
+ *  Hides the list
+ * @param {string} path
  */
 function hideList (path) {
   $("[id='" + path + "']").hide()
@@ -291,7 +279,7 @@ function showItems (path) {
  * @param resource_path
  */
 function hideItems (resource_path) {
-  path = resource_path.replace(/.id./g, '\.[^.]+\.') + '\.[^.]+\.view'
+  let path = resource_path.replace(/.id./g, '\.[^.]+\.') + '\.[^.]+\.view'
   $('div').filter(function () {
     return this.id.match(path)
   }).hide()
@@ -303,7 +291,7 @@ function hideItems (resource_path) {
  */
 function hideLinks (resource_path) {
   // TODO: Handle Region and VPC hiding...
-  path = resource_path.replace(/.id./g, '\.[^.]+\.') + '\.[^.]+\.link'
+  let path = resource_path.replace(/.id./g, '\.[^.]+\.') + '\.[^.]+\.link'
   $('div').filter(function () {
     return this.id.match(path)
   }).hide()
@@ -319,20 +307,20 @@ function showRowWithItems (path) {
 }
 
 /**
- * 
- * @param {*} resource_path 
+ * Shows filters
+ * @param {string} resourcePath
  */
-function showFilters (resource_path) {
+function showFilters (resourcePath) {
   hideFilters()
-  service = resource_path.split('.')[1]
+  let service = resourcePath.split('.')[1]
   // Show service filters
-  $('[id="' + resource_path + '.id.filters"]').show()
+  $('[id="' + resourcePath + '.id.filters"]').show()
   // show region filters
   $('[id*="regionfilters.' + service + '.regions"]').show()
 }
 
 /**
- * 
+ * Hides filters
  */
 function hideFilters () {
   $('[id*=".id.filters"]').hide()
@@ -346,13 +334,13 @@ function hideFilters () {
 
 /**
  * Show findings
- * @param path
- * @param resource_path
+ * @param {string} path
+ * @param {string} resourcePath
  */
-function showFindings (path, resource_path) {
+function showFindings (path, resourcePath) {
   let items = get_value_at(path)
   let level = get_value_at(path.replace('items', 'level'))
-  let resourcePathArray = resource_path.split('.')
+  let resourcePathArray = resourcePath.split('.')
   let splitPath = path.split('.')
   let findingService = splitPath[1]
   let findingKey = splitPath[splitPath.length - 2]
@@ -369,16 +357,16 @@ function showFindings (path, resource_path) {
     $('[id="' + items[item] + '"]').attr('data-finding-service', findingService)
     $('[id="' + items[item] + '"]').attr('data-finding-key', findingKey)
     $('[id="' + items[item] + '"]').click(function (e) {
-      finding_id = e.target.id
+      let findingId = e.target.id
       if (!(findingService in exceptions)) {
-        exceptions[findingService] = new Object()
+        exceptions[findingService] = {}
       }
       if (!(findingKey in exceptions[findingService])) {
-        exceptions[findingService][findingKey] = new Array()
+        exceptions[findingService][findingKey] = []
       }
-      is_exception = confirm('Mark this item as an exception ?')
-      if (is_exception && (exceptions[findingService][findingKey].indexOf(finding_id) == -1)) {
-        exceptions[findingService][findingKey].push(finding_id)
+      let is_exception = confirm('Mark this item as an exception ?')
+      if (is_exception && (exceptions[findingService][findingKey].indexOf(findingId) == -1)) {
+        exceptions[findingService][findingKey].push(findingId)
       }
     })
   }
@@ -398,9 +386,9 @@ function showSingleItem (id) {
 }
 
 /**
- * 
- * @param {*} keyword 
- * @param {*} item 
+ * Toggles details
+ * @param {string} keyword
+ * @param {string} item
  */
 function toggleDetails (keyword, item) {
   var id = '#' + keyword + '-' + item
@@ -440,8 +428,8 @@ function updateNavbar (path) {
 }
 
 /**
- * 
- * @param {*} element 
+ * Tells if navbar has suff
+ * @param {*} element
  */
 function hasNavbarSuffix (element) {
   return element &&
@@ -450,8 +438,8 @@ function hasNavbarSuffix (element) {
 }
 
 /**
- * 
- * @param {*} id 
+ * Toggles visibility
+ * @param {string} id 
  */
 function toggleVisibility (id) {
   let id1 = '#' + id
@@ -465,21 +453,21 @@ function toggleVisibility (id) {
 }
 
 /**
- *
+ * Iterates through EC2 objects and calls
  * @param data
  * @param entities
  * @param callback
- * @param callback_args
+ * @param callbackArgs
  */
-function iterateEC2ObjectsAndCall (data, entities, callback, callback_args) {
+function iterateEC2ObjectsAndCall (data, entities, callback, callbackArgs) {
   if (entities.length > 0) {
     var entity = entities.shift()
     var recurse = entities.length
     for (let i in data[entity]) {
       if (recurse) {
-        iterateEC2ObjectsAndCall(data[entity][i], eval(JSON.stringify(entities)), callback, callback_args)
+        iterateEC2ObjectsAndCall(data[entity][i], eval(JSON.stringify(entities)), callback, callbackArgs)
       } else {
-        callback(data[entity][i], callback_args)
+        callback(data[entity][i], callbackArgs)
       }
     }
   }
@@ -545,16 +533,16 @@ function findEC2ObjectByAttr (ec2Data, entities, attributes) {
 }
 
 /**
- *
- * @param ec2_info
+ * Finds EC2 object attribute
+ * @param ec2Info
  * @param path
  * @param id
  * @param attribute
  * @returns {*}
  */
-function findEC2ObjectAttribute (ec2_info, path, id, attribute) {
+function findEC2ObjectAttribute (ec2Info, path, id, attribute) {
   var entities = path.split('.')
-  var object = findEC2Object(ec2_info, entities, id)
+  var object = findEC2Object(ec2Info, entities, id)
   if (object[attribute]) {
     return object[attribute]
   }
@@ -562,7 +550,7 @@ function findEC2ObjectAttribute (ec2_info, path, id, attribute) {
 }
 
 /**
- *
+ * Finds and shows EC2 object
  * @param path
  * @param id
  */
@@ -587,14 +575,14 @@ function findAndShowEC2Object (path, id) {
 }
 
 /**
- *
+ * Finds and shows EC2 object by attribute
  * @param path
  * @param attributes
  */
 function findAndShowEC2ObjectByAttr (path, attributes) {
   let entities = path.split('.')
   if (getFormat() === resultFormats.json) {
-  var object = findEC2ObjectByAttr(run_results['services']['ec2'], entities, attributes)
+    var object = findEC2ObjectByAttr(run_results['services']['ec2'], entities, attributes)
   } else if (getFormat() === resultFormats.sqlite) {
     console.log('TODO (SQLite) 2')
   }
@@ -605,7 +593,7 @@ function findAndShowEC2ObjectByAttr (path, attributes) {
 }
 
 /**
- *
+ * Shows EC2 instance
  * @param data
  */
 function showEC2Instance2 (data) {
@@ -613,14 +601,14 @@ function showEC2Instance2 (data) {
 }
 
 /**
- *
+ * Shows EC2 instance
  * @param region
  * @param vpc
  * @param id
  */
 function showEC2Instance (region, vpc, id) {
   if (getFormat() === resultFormats.json) {
-  var data = run_results['services']['ec2']['regions'][region]['vpcs'][vpc]['instances'][id]
+    var data = run_results['services']['ec2']['regions'][region]['vpcs'][vpc]['instances'][id]
   } else if (getFormat() === resultFormats.sqlite) {
     console.log('TODO (SQLite) 3')
   }
@@ -628,14 +616,14 @@ function showEC2Instance (region, vpc, id) {
 }
 
 /**
- *
+ * Shows EC2 security group
  * @param region
  * @param vpc
  * @param id
  */
 function showEC2SecurityGroup (region, vpc, id) {
   if (getFormat() === resultFormats.json) {
-  var data = run_results['services']['ec2']['regions'][region]['vpcs'][vpc]['security_groups'][id]
+    var data = run_results['services']['ec2']['regions'][region]['vpcs'][vpc]['security_groups'][id]
   } else if (getFormat() === resultFormats.sqlite) {
     console.log('TODO (SQLite) 4')
   }
@@ -643,37 +631,40 @@ function showEC2SecurityGroup (region, vpc, id) {
 }
 
 /**
- *
+ * Shows object
+ * @param {string} path
+ * @param {string} attrName
+ * @param {string} attrValue
  */
-function showObject (path, attr_name, attr_value) {
-  console.log('Path: ' + path + ' with attrName ' + attr_name + ' with attrValue ' + attr_value)
+function showObject (path, attrName, attrValue) {
+  console.log('Path: ' + path + ' with attrName ' + attrName + ' with attrValue ' + attrValue)
   const pathArray = path.split('.')
-  const path_length = pathArray.length
+  const pathLength = pathArray.length
   let data = getResource(path)
 
   // Adds the resource path values to the data context
-  for (let i = 0; i < path_length - 1; i += 2) {
-    if (i + 1 >= path_length) break
+  for (let i = 0; i < pathLength - 1; i += 2) {
+    if (i + 1 >= pathLength) break
 
     const attribute = makeResourceTypeSingular(pathArray[i])
     data[attribute] = pathArray[i + 1]
   }
 
   // Filter if ...
-  let resource_type
-  if (attr_name && attr_value) {
+  let resourceType
+  if (attrName && attrValue) {
     for (const resource in data) {
-      if (data[resource][attr_name] !== attr_value) continue
+      if (data[resource][attrName] !== attrValue) continue
       data = data[resource]
       break
     }
 
-    resource_type = pathArray[1] + '_' + pathArray[path_length - 1]
+    resourceType = pathArray[1] + '_' + pathArray[pathLength - 1]
   } else {
-    resource_type = pathArray[1] + '_' + pathArray[path_length - 2]
+    resourceType = pathArray[1] + '_' + pathArray[pathLength - 2]
   }
 
-  let resource = makeResourceTypeSingular(resource_type)
+  let resource = makeResourceTypeSingular(resourceType)
   let template = 'single_' + resource + '_template'
   showPopup(window[template](data))
 }
@@ -699,37 +690,37 @@ function makeResourceTypeSingular (resource_type) {
 }
 
 /**
- *
- * @param policy_id
+ * Displays IAM Managed Policy
+ * @param policyId
  */
-function showIAMManagedPolicy (policy_id) {
+function showIAMManagedPolicy (policyId) {
   if (getFormat() === resultFormats.json) {
-  var data = run_results['services']['iam']['policies'][policy_id]
+    var data = run_results['services']['iam']['policies'][policyId]
   } else if (getFormat() === resultFormats.sqlite) {
     console.log('TODO (SQLite) 6')
   }
-  data['policy_id'] = policy_id
+  data['policy_id'] = policyId
   showIAMPolicy(data)
 }
 
 /**
- *
- * @param iam_entity_type
- * @param iam_entity_name
- * @param policy_id
+ * Displays IAM Inline Policy
+ * @param iamEntityType
+ * @param iamEntityName
+ * @param policyId
  */
-function showIAMInlinePolicy (iam_entity_type, iam_entity_name, policy_id) {
+function showIAMInlinePolicy (iamEntityType, iamEntityName, policyId) {
   if (getFormat() === resultFormats.json) {
-  var data = run_results['services']['iam'][iam_entity_type][iam_entity_name]['inline_policies'][policy_id]
+    var data = run_results['services']['iam'][iamEntityType][iamEntityName]['inline_policies'][policyId]
   } else if (getFormat() === resultFormats.sqlite) {
     console.log('TODO (SQLite) 7')
   }
-  data['policy_id'] = policy_id
+  data['policy_id'] = policyId
   showIAMPolicy(data)
 }
 
 /**
- *
+ * Displays IAM Policy
  * @param data
  */
 function showIAMPolicy (data) {
@@ -739,12 +730,12 @@ function showIAMPolicy (data) {
 }
 
 /**
- *
- * @param bucket_name
+ * Display S3 bucket
+ * @param bucketName
  */
-function showS3Bucket (bucket_name) {
+function showS3Bucket (bucketName) {
   if (getFormat() === resultFormats.json) {
-    var data = run_results['services']['s3']['buckets'][bucket_name]
+    var data = run_results['services']['s3']['buckets'][bucketName]
   } else if (getFormat() === resultFormats.sqlite) {
     console.log('TODO (SQLite) 8')
   }  
@@ -752,24 +743,24 @@ function showS3Bucket (bucket_name) {
 }
 
 /**
- *
- * @param bucket_id
- * @param key_id
+ * Displays S3 object
+ * @param bucketId
+ * @param keyId
  */
-function showS3Object (bucket_id, key_id) {
+function showS3Object (bucketId, keyId) {
   if (getFormat() === resultFormats.json) {
-    var data = run_results['services']['s3']['buckets'][bucket_id]['keys'][key_id]
+    var data = run_results['services']['s3']['buckets'][bucketId]['keys'][keyId]
   } else if (getFormat() === resultFormats.sqlite) {
     console.log('TODO (SQLite) 9')
   }
-  data['key_id'] = key_id
-  data['bucket_id'] = bucket_id
+  data['key_id'] = keyId
+  data['bucket_id'] = bucketId
   showPopup(single_s3_object_template(data))
 }
 
 /**
- * 
- * @param {*} content 
+ * Displays the popup
+ * @param {*} content
  */
 function showPopup (content) {
   $('#modal-container').html(content)
@@ -798,7 +789,7 @@ function loadMetadata () {
     run_results = getScoutsuiteResultsSqlite()
     loadFirstPageEverywhere()
   }
-  
+
   loadAccountId()
 
   loadConfig('last_run', 1, false)
@@ -813,10 +804,10 @@ function loadMetadata () {
         continue
       }
       for (let section in run_results['metadata'][group][service]) {
-        for (let resource_type in run_results['metadata'][group][service][section]) {
-          add_templates(group, service, section, resource_type,
-            run_results['metadata'][group][service][section][resource_type]['path'],
-            run_results['metadata'][group][service][section][resource_type]['cols'])
+        for (let resourceType in run_results['metadata'][group][service][section]) {
+          add_templates(group, service, section, resourceType,
+            run_results['metadata'][group][service][section][resourceType]['path'],
+            run_results['metadata'][group][service][section][resourceType]['cols'])
         }
       }
     }
@@ -856,8 +847,8 @@ function showLastRunDetails () {
  * Shows resources details modal
  */
 function showResourcesDetails() {
-    $('#modal-container').html(resources_details_template(run_results));
-    $('#modal-container').modal();
+  $('#modal-container').html(resources_details_template(run_results));
+  $('#modal-container').modal()
 }
 
 /**
@@ -880,13 +871,13 @@ function show_main_dashboard () {
 
 /**
  * Make title from resource path
- * @param {string} resource_path
+ * @param {string} resourcePath
  * @returns {string}
  */
-function makeTitle (resource_path) {
-  resource_path = resource_path.replace('service_groups.', '')
-  service = getService(resource_path)
-  resource = resource_path.split('.').pop()
+function makeTitle (resourcePath) {
+  resourcePath = resourcePath.replace('service_groups.', '')
+  let service = getService(resourcePath)
+  let resource = resourcePath.split('.').pop()
   resource = resource.replace(/_/g, ' ').replace('<', '').replace('>',
     '').replace(/\w\S*/g, function (txt) {
     return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
@@ -896,14 +887,14 @@ function makeTitle (resource_path) {
 
 /**
  * Returns the service
- * @param {string} resource_path
+ * @param {string} resourcePath
  * @returns {string}
  */
-function getService (resource_path) {
-  if (resource_path.startsWith('services')) {
-    service = resource_path.split('.')[1]
+function getService (resourcePath) {
+  if (resourcePath.startsWith('services')) {
+    var service = resourcePath.split('.')[1]
   } else {
-    service = resource_path.split('.')[0]
+    service = resourcePath.split('.')[0]
   }
   service = make_title(service)
   return service
@@ -1058,20 +1049,20 @@ function lazyLoadingJson (path) {
  */
 function get_resource_path (path) {
   if (path.endsWith('.items')) {
-    var resource_path = get_value_at(path.replace('items', 'display_path'))
-    if (resource_path === undefined) {
-      resource_path = get_value_at(path.replace('items', 'path'))
+    var resourcePath = get_value_at(path.replace('items', 'display_path'))
+    if (resourcePath === undefined) {
+      resourcePath = get_value_at(path.replace('items', 'path'))
     }
-    resourcePathArray = resource_path.split('.')
-    lastValue = resourcePathArray.pop()
-    resource_path = 'services.' + resourcePathArray.join('.')
+    let resourcePathArray = resourcePath.split('.')
+    resourcePathArray.pop()
+    resourcePath = 'services.' + resourcePathArray.join('.')
   } else if (path.endsWith('.view')) {
     // Resource path is not changed (this may break when using `back' button in browser)
-    resource_path = currentResourcePath
+    resourcePath = currentResourcePath
   } else {
-    resource_path = path
+    resourcePath = path
   }
-  return resource_path
+  return resourcePath
 }
 
 /**
@@ -1146,9 +1137,9 @@ function make_title (title) {
  */
 function toggleName(name) {
   if (name.style.display !== 'contents') {
-      name.style.display = 'contents'
+    name.style.display = 'contents'
   } else {
-      name.style.display = 'block'
+    name.style.display = 'block'
   }
 }
 
@@ -1157,17 +1148,17 @@ function toggleName(name) {
  * @param group
  * @param service
  * @param section
- * @param resource_type
+ * @param resourceType
  * @param path
  * @param cols
  */
-function add_templates (group, service, section, resource_type, path, cols) {
+function add_templates (group, service, section, resourceType, path, cols) {
   if (cols === undefined) {
     cols = 2
   }
-  add_template(group, service, section, resource_type, path, 'details')
+  add_template(group, service, section, resourceType, path, 'details')
   if (cols > 1) {
-    add_template(group, service, section, resource_type, path, 'list')
+    add_template(group, service, section, resourceType, path, 'list')
   }
 }
 
@@ -1176,40 +1167,40 @@ function add_templates (group, service, section, resource_type, path, cols) {
  * @param group
  * @param service
  * @param section
- * @param resource_type
+ * @param resourceType
  * @param path
  * @param suffix
  */
-function add_template (group, service, section, resource_type, path, suffix) {
+function add_template (group, service, section, resourceType, path, suffix) {
   var template = document.createElement('script')
-  var partial_name = ''
+  var partialName = ''
   template.type = 'text/x-handlebars-template'
   template.id = path + '.' + suffix + '.template'
   if (section === 'resources') {
     if (suffix === 'list') {
       if (path.indexOf('.vpcs.id.') > 0) {
-        partial_name = 'left_menu_for_vpc'
+        partialName = 'left_menu_for_vpc'
       } else if (path.indexOf('.regions.id.') > 0) {
-        partial_name = 'left_menu_for_region'
+        partialName = 'left_menu_for_region'
       } else if (path.indexOf('.projects.id.') > 0) {
-        partial_name = 'left_menu_for_project';
+        partialName = 'left_menu_for_project
       } else {
-        partial_name = 'left_menu'
+        partialName = 'left_menu'
       }
-    } else if (suffix == 'details') {
+    } else if (suffix === 'details') {
       if (path.indexOf('.vpcs.id.') > 0) {
-        partial_name = 'details_for_vpc'
+        partialName = 'details_for_vpc'
       } else if (path.indexOf('.regions.id.') > 0) {
-        partial_name = 'details_for_region'
+        partialName = 'details_for_region'
       } else if (path.indexOf('.projects.id.') > 0) {
-        partial_name = 'details_for_project';
+        partialName = 'details_for_project'
       } else {
-        partial_name = 'details'
+        partialName = 'details'
       }
     } else {
       console.log('Invalid suffix (' + suffix + ') for resources template.')
     }
-    template.innerHTML = '{{> ' + partial_name + " service_group = '" + group + "' service_name = '" + service + "' resource_type = '" + resource_type + "' partial_name = '" + path + "'}}"
+    template.innerHTML = '{{> ' + partialName + " service_group = '" + group + "' service_name = '" + service + "' resource_type = '" + resourceType + "' partial_name = '" + path + "'}}"
     $('body').append(template)
   }
 }
@@ -1232,9 +1223,9 @@ function filter_rules (group, service) {
 
 /**
  * Downloads the configuration
- * @param {object} configuration 
- * @param {string} name 
- * @param {string} prefix 
+ * @param {object} configuration
+ * @param {string} name
+ * @param {string} prefix
  */
 function downloadConfiguration (configuration, name, prefix) {
   var uriContent = 'data:text/json;charset=utf-8,' + encodeURIComponent(prefix + JSON.stringify(configuration, null, 4))
@@ -1249,38 +1240,38 @@ function downloadConfiguration (configuration, name, prefix) {
  */
 function download_exceptions () {
   var url = window.location.pathname
-  var profile_name = url.substring(url.lastIndexOf('/') + 1).replace('report-', '').replace('.html', '')
+  var profileName = url.substring(url.lastIndexOf('/') + 1).replace('report-', '').replace('.html', '')
   console.log(exceptions)
-  downloadConfiguration(exceptions, 'exceptions-' + profile_name, 'exceptions = \n')
+  downloadConfiguration(exceptions, 'exceptions-' + profileName, 'exceptions = \n')
 }
 
 /**
  * Shows an element
- * @param {*} element_id 
+ * @param {string} elementId
  */
-var showElement = function (element_id) {
-  $('#' + element_id).show()
+var showElement = function (elementId) {
+  $('#' + elementId).show()
 }
 
 /**
  * Hides an element
- * @param {string} element_id 
+ * @param {string} elementId
  */
-var hideElement = function (element_id) {
-  $('#' + element_id).hide()
+var hideElement = function (elementId) {
+  $('#' + elementId).hide()
 }
 
 /**
  * Toggles an element
- * @param {string} element_id 
+ * @param {string} elementId
  */
-var toggle_element = function (element_id) {
-  $('#' + element_id).toggle()
+var toggle_element = function (elementId) {
+  $('#' + elementId).toggle()
 }
 
 /**
  * Sets the url to filter a specific region
- * @param {string} region 
+ * @param {string} region
  */
 function set_filter_url (region) {
   let tmp = location.hash.split('.')
@@ -1346,8 +1337,8 @@ function download_as_csv (filename, rows) {
 
  /**
   * Downloads the dictionary as a .json file
-  * @param {string} filename 
-  * @param {object} dict 
+  * @param {string} filename
+  * @param {object} dict
   */
 function downloadAsJson (filename, dict) {
   var jsonStr = JSON.stringify(dict)
@@ -1369,4 +1360,3 @@ function downloadAsJson (filename, dict) {
     }
   }
 }
-
