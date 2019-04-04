@@ -33,6 +33,8 @@ class HTMLReport(object):
         
         self.exceptions_encoder = JavaScriptEncoder(self.profile, report_dir, timestamp)
 
+        self.exceptions_encoder = JavaScriptEncoder(self.profile, report_dir, timestamp)
+
         if result_format == "sqlite":
             self.encoder = SqlLiteEncoder(self.profile, report_dir, timestamp)
         else:
@@ -96,7 +98,7 @@ class ScoutReport(HTMLReport):
     def save(self, config, exceptions, force_write=False, debug=False):
         self.prepare_html_report_dir()
         self.encoder.save_to_file(config, ReportFile.results, force_write, debug)
-        self.encoder.save_to_file(exceptions, ReportFile.exceptions, force_write, debug)
+        self.exceptions_encoder.save_to_file(exceptions, ReportFile.exceptions, force_write, debug)
         if ERRORS_LIST:
             self.exceptions_encoder.save_to_file(ERRORS_LIST, ReportFile.errors, force_write, debug)
         return self.create_html_report(force_write)
