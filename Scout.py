@@ -27,6 +27,7 @@ def main():
         args.get('timestamp'),
         args.get('services'), args.get('skipped_services'),
         args.get('thread_config'),  # todo deprecate
+        args.get('result_format'),
         args.get('max_workers'),
         args.get('regions'),
         args.get('fetch_local'), args.get('update'),

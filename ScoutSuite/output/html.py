@@ -82,7 +82,7 @@ class HTMLReport(object):
         shutil.copytree(src_inc_scoutsuite_dir, inc_scoutsuite_dir)
 
 
-class ScoutSuiteReport(HTMLReport):
+class ScoutReport(HTMLReport):
     """
     Scout Suite HTML report
     """
@@ -92,7 +92,7 @@ class ScoutSuiteReport(HTMLReport):
         self.html_root = ReportFile.report.value
         self.provider = provider
         self.result_format = result_format
-        super(ScoutSuiteReport, self).__init__(profile, report_dir, timestamp, exceptions, result_format)
+        super(ScoutReport, self).__init__(profile, report_dir, timestamp, exceptions, result_format)
 
     def save(self, config, exceptions, force_write=False, debug=False):
         self.prepare_html_report_dir()

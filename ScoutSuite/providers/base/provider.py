@@ -10,7 +10,6 @@ import sys
 from ScoutSuite import __version__ as scout_version
 from ScoutSuite.core.console import print_exception, print_info
 from ScoutSuite.output.html import ScoutReport
-from ScoutSuite import __version__ as scoutsuite_version
 from ScoutSuite.providers.base.configs.browser import get_object_at
 
 
@@ -26,10 +25,10 @@ class BaseProvider(object):
     """
 
     def __init__(self, report_dir=None, timestamp=None, services=None, skipped_services=None, thread_config=4,
-                 result_format='json', **kwargs):
+                 **kwargs):
         """
 
-        :aws_account_id     AWS account ID
+        :account_id         account ID
         :last_run           Information about the last run
         :metadata           Metadata used to generate the HTML report
         :ruleset            Ruleset used to perform the analysis
@@ -46,6 +45,12 @@ class BaseProvider(object):
         self.services = self.services_config(self.credentials)
         supported_services = vars(self.services).keys()
         self.service_list = self._build_services_list(supported_services, services, skipped_services)
+
+    def get_report_name(self):
+        """
+        Returns the name of the report using the provider's configuration
+        """
+        return 'base'
 
     def preprocessing(self, ip_ranges=None, ip_ranges_name_key=None):
         """
@@ -85,10 +90,10 @@ class BaseProvider(object):
 
         # TODO implement this properly
         """
-        This is quite ugly but the legacy Scout2 expects the configurations to be dictionaries.
+        This is quite ugly but the legacy Scout expects the configurations to be dictionaries.
         Eventually this should be moved to objects/attributes, but that will require significant re-write.
         """
-        report = ScoutSuiteReport(self.provider_code, 'placeholder')
+        report = ScoutReport(self.provider_code, 'placeholder')
         self.services = report.encoder.to_dict(self.services)
 
     def _load_metadata(self):
@@ -117,7 +122,7 @@ class BaseProvider(object):
 
     def _update_last_run(self, current_time, ruleset):
         last_run = {'time': current_time.strftime("%Y-%m-%d %H:%M:%S%z"), 'cmd': ' '.join(sys.argv),
-                    'version': scoutsuite_version, 'ruleset_name': ruleset.name, 'ruleset_about': ruleset.about,
+                    'version': scout_version, 'ruleset_name': ruleset.name, 'ruleset_about': ruleset.about,
                     'summary': {}}
         for service in self.services:
             last_run['summary'][service] = {'checked_items': 0, 'flagged_items': 0, 'max_level': 'warning',
@@ -153,11 +158,11 @@ class BaseProvider(object):
                 service_map[service] = service_group
                 for resource in self.metadata[service_group][service]['resources']:
                     # full_path = path if needed
-                    if 'full_path' not in self.metadata[service_group][service]['resources'][resource]:
+                    if not 'full_path' in self.metadata[service_group][service]['resources'][resource]:
                         self.metadata[service_group][service]['resources'][resource]['full_path'] = \
                             self.metadata[service_group][service]['resources'][resource]['path']
                     # Script is the full path minus "id" (TODO: change that)
-                    if 'script' not in self.metadata[service_group][service]['resources'][resource]:
+                    if not 'script' in self.metadata[service_group][service]['resources'][resource]:
                         self.metadata[service_group][service]['resources'][resource]['script'] = '.'.join(
                             [x for x in
                              self.metadata[service_group][service]['resources'][resource]['full_path'].split(
@@ -263,7 +268,7 @@ class BaseProvider(object):
                         callback_name = callback[0]
                         callback_args = copy.deepcopy(callback[1])
                         target_path = self.metadata[service_group]['summaries'][summary]['path'].split('.')
-                        # quick fix as legacy Scout2 expects "self" to be a dict
+                        # quick fix as legacy Scout expects "self" to be a dict
                         target_object = self
                         for p in target_path:
                             self.manage_object(target_object, p, {})

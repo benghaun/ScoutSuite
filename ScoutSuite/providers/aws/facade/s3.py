@@ -101,8 +101,8 @@ class S3Facade(AWSBaseFacade):
             if 'ServerSideEncryptionConfigurationNotFoundError' in e.response['Error']['Code']:
                 bucket['default_encryption_enabled'] = False
             else:
-                print_error('Failed to get encryption configuration for %s: %s' % (bucket_name, e))
                 bucket['default_encryption_enabled'] = None
+                print_exception('Failed to get encryption configuration for %s: %s' % (bucket_name, e))
         except Exception as e:
             print_exception('Failed to get encryption configuration for %s: %s' % (bucket_name, e))
             bucket['default_encryption'] = 'Unknown'

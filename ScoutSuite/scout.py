@@ -29,6 +29,7 @@ def run(provider,
         timestamp,
         services, skipped_services,
         thread_config,  # TODO deprecate
+        result_format,
         max_workers,
         regions,
         fetch_local, update,
@@ -59,6 +60,7 @@ async def _run(provider,
                timestamp,
                services, skipped_services,
                thread_config,  # TODO deprecate
+               result_format,
                regions,
                fetch_local, update,
                ip_ranges, ip_ranges_name_key,
@@ -111,13 +113,15 @@ async def _run(provider,
                                   services=services,
                                   skipped_services=skipped_services,
                                   thread_config=thread_config,
+                                  result_format=result_format,
                                   credentials=credentials)
 
-    if args.get('database_name'):
-        report_name = args.get('database_name') if isinstance(args.get('database_name'), str) else report_file_name
-        database_file, _ = get_filename(ReportFile.results, report_name, args.get('report_dir'), extension="db")
-        Server.init(database_file, args.get('host_ip'), args.get('host_port'))
-        return
+
+    #if args.get('database_name'):
+     #   report_name = args.get('database_name') if isinstance(args.get('database_name'), str) else report_file_name
+      #  database_file, _ = get_filename(ReportFile.results, report_name, args.get('report_dir'), extension="db")
+       # Server.init(database_file, args.get('host_ip'), args.get('host_port'))
+        #return
 
     # Create a new report
     report_name = report_name if report_name else cloud_provider.get_report_name()

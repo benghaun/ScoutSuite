@@ -14,7 +14,7 @@ from ScoutSuite.core.exceptions import RuleExceptions
 from ScoutSuite.core.processingengine import ProcessingEngine
 from ScoutSuite.core.ruleset import Ruleset
 from ScoutSuite.core.server import Server
-from ScoutSuite.output.html import ScoutSuiteReport
+from ScoutSuite.output.html import ScoutReport
 from ScoutSuite.output.utils import get_filename
 from ScoutSuite.providers import get_provider
 from ScoutSuite.providers.base.authentication_strategy_factory import get_authentication_strategy
@@ -92,7 +92,7 @@ async def run_scan(args):
     # TODO: move this to after authentication, so that the report can be more specific to what's being scanned.
     # For example if scanning with a GCP service account, the SA email can only be known after authenticating...
     # Create a new report
-    report = ScoutSuiteReport(args.get('provider'), report_file_name, args.get('report_dir'), args.get('timestamp'),
+    report = ScoutReport(args.get('provider'), report_file_name, args.get('report_dir'), args.get('timestamp'),
                               result_format=args.get('result_format'))
 
     # Complete run, including pulling data from provider
