@@ -1,6 +1,8 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 import sys
+from ScoutSuite.__main__ import main
 
 from ScoutSuite.core.cli_parser import ScoutSuiteArgumentParser
 from ScoutSuite.scout import run

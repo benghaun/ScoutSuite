@@ -36,7 +36,7 @@ class EC2Facade(AWSBaseFacade):
             for instance in reservation['Instances']:
                 instance['ReservationId'] = reservation['ReservationId']
                 instances.append(instance)
-
+                
         return instances
 
     async def get_security_groups(self, region: str, vpc: str):
@@ -65,9 +65,7 @@ class EC2Facade(AWSBaseFacade):
             'ec2', region, self.session, 'describe_network_interfaces', 'NetworkInterfaces', Filters=filters)
 
     async def get_volumes(self, region: str):
-        volumes = await AWSFacadeUtils.get_all_pages('ec2', region, self.session, 'describe_volumes', 'Volumes')
-        await get_and_set_concurrently([self._get_and_set_key_manager], volumes, region=region)
-        return volumes
+        return await AWSFacadeUtils.get_all_pages('ec2', region, self.session, 'describe_volumes', 'Volumes')
 
     async def _get_and_set_key_manager(self, volume: {}, region: str):
         kms_client = AWSFacadeUtils.get_client('kms', self.session, region)

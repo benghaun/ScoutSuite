@@ -869,7 +869,7 @@ function showMainDashboard () {
   hideFilters()
   $('#findings_download_button').hide()
   $('#paging_buttons').hide()
-  showRowWithItems('account_id')
+  showRowWithItems('aws_account_id')
   showRowWithItems('last_run')
   $('#section_title-h2').text('')
   $('#section_paging-h2').text('')
@@ -1204,8 +1204,6 @@ function addTemplate (group, service, section, resourceType, path, suffix) {
         partialName = 'details_for_vpc'
       } else if (path.indexOf('.regions.id.') > 0) {
         partialName = 'details_for_region'
-      } else if (path.indexOf('.projects.id.') > 0) {
-        partialName = 'details_for_project'
       } else {
         partialName = 'details'
       }
