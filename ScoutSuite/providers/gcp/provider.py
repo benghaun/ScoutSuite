@@ -1,12 +1,8 @@
 # -*- coding: utf-8 -*-[d['value'] for d in l]
 
 import os
-import warnings
 
-import google.auth
-import googleapiclient
-from ScoutSuite.core.console import print_error, print_exception, print_info
-
+from ScoutSuite.core.console import print_exception, print_info
 from ScoutSuite.providers.base.provider import BaseProvider
 from ScoutSuite.providers.gcp.configs.services import GCPServicesConfig
 from ScoutSuite.providers.gcp.utils import gcp_connect_service

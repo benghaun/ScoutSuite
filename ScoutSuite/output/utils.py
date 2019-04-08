@@ -9,8 +9,6 @@ from ScoutSuite.core.console import print_error
 from six.moves import input
 
 from ScoutSuite.output.report_file import ReportFile
-from ScoutSuite import DEFAULT_ERRORS_FILE
-
 
 def prompt_for_yes_no(question):
     """
@@ -45,52 +43,29 @@ def prompt_for_overwrite(filename, force_write):
     return prompt_for_yes_no('File \'{}\' already exists. Do you want to overwrite it'.format(filename))
 
 
-def get_filename(config_type, profile, report_dir, extension=None):
-        if config_type == ReportFile.results:
+def get_filename(file_type, profile, report_dir, extension=None):
+        if file_type == ReportFile.results:
             filename = ReportFile.results.value
             first_line = 'scoutsuite_results ='
-        elif config_type == ReportFile.exceptions:
+        elif file_type == ReportFile.exceptions:
             filename = ReportFile.exceptions.value
             first_line = 'exceptions ='
-        elif config_type == ReportFile.report:
+        elif file_type == ReportFile.report:
             filename = ReportFile.report.value
             first_line = None
-        elif config_type == ReportFile.ruleset:
+        elif file_type == ReportFile.ruleset:
             filename = ReportFile.ruleset.value
             first_line = 'scoutsuite_results ='
+        elif file_type == ReportFile.errors:
+            filename = ReportFile.errors.value
+            first_line = None
         else:
-            print_error('invalid config type provided (%s)' % config_type)
+            print_error('invalid config type provided (%s)' % file_type)
             raise Exception
         # Append profile name if necessary
-        if profile != 'default' and config_type != ReportFile.ruleset:
+        if profile != 'default' and file_type != ReportFile.ruleset:
             name, original_extension = filename.split('.')
             extension = extension if extension else original_extension
             filename = '%s-%s.%s' % (name, profile, extension)
         return os.path.join(report_dir, filename), first_line
-
-    if file_type == 'RESULTS':
-        filename = DEFAULT_RESULT_FILE
-        first_line = 'scoutsuite_results ='
-    elif file_type == 'EXCEPTIONS':
-        filename = DEFAULT_EXCEPTIONS_FILE
-        first_line = 'exceptions ='
-    elif file_type == 'HTMLREPORT':
-        filename = DEFAULT_HTMLREPORT_FILE
-        first_line = None
-    elif file_type == 'RULESET':
-        filename = DEFAULT_RULESET_FILE
-        first_line = 'scoutsuite_results ='
-    elif file_type == 'ERRORS':
-        filename = DEFAULT_ERRORS_FILE
-        first_line = None
-    else:
-        print_error('Invalid file type provided: {}'.format(file_type))
-        raise Exception
-
-    # Append profile name if necessary
-    if profile != 'default' and file_type != 'RULESET':
-        name, extention = filename.split('.')
-        filename = '%s-%s.%s' % (name, profile, extention)
-
-    return (os.path.join(report_dir, filename), first_line)
 

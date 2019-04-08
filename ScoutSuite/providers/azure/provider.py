@@ -4,9 +4,9 @@ import os
 
 from ScoutSuite.core.console import print_error, print_exception
 
+from ScoutSuite.providers.azure.services import AzureServicesConfig
 from ScoutSuite.providers.base.provider import BaseProvider
-from ScoutSuite.providers.azure.configs.services import AzureServicesConfig
-
+from ScoutSuite.providers.azure.services import AzureServicesConfig
 
 
 class AzureProvider(BaseProvider):
